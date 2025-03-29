@@ -8,13 +8,15 @@ class types(Enum):
  func=0
  stri=1
  numb=2
- tbev=3
+ flot=3
+ tbev=4
 
 def split(line:str) -> list[tuple[types,str]]:
  res: list[tuple[types,str]] = []
  sym:str = ""
  i:int = 0
  paren:int = 0
+ dot:int = 0
  while i<len(line):
   if line[i]=='"':
    i+=1
@@ -37,7 +39,12 @@ def split(line:str) -> list[tuple[types,str]]:
    while i<len(line) and line[i].isdigit():
     sym+=line[i]
     i+=1
-   res.append((types.numb,sym))
+    if line[i]=="." and dot==0:
+     sym+="."
+     i+=1
+     dot+=1
+    elif line[i]=="." and dot>0: break
+   res.append((types.numb,sym) if dot==0 else (types.flot,sym))
   elif line[i]=="#": break
   elif line[i]=="(":
    paren+=1
@@ -58,11 +65,11 @@ def split(line:str) -> list[tuple[types,str]]:
   i+=1
  return res
 
-var:dict[tuple[str,tuple[types,str]]]={}
+var:dict[tuple[str,tuple[types,str]]]={"pi":(types.flot,"3.14159265")}
 def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
  global var
  command:tuple[int,str] = args.pop(0)
- if command[0] == types.stri or command[0] == types.numb:
+ if command[0] == types.stri or command[0] == types.numb or command[0] == types.flot:
   return command
  elif command[0] == types.tbev:
   return execute(split(command[1]))
@@ -84,22 +91,22 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
    del var[args[0][1]]
   elif command[1]=="+":
    try:
-    return (types.numb,str(int(execute(split(args[0][1]))[1]) + int(execute(split(args[1][1]))[1])))
+    return (types.flot,str(float(execute(split(args[0][1]))[1]) + float(execute(split(args[1][1]))[1])))
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="-":
    try:
-    return (types.numb,str(int(execute(split(args[0][1]))[1]) - int(execute(split(args[1][1]))[1])))
+    return (types.flot,str(float(execute(split(args[0][1]))[1]) - int(execute(split(args[1][1]))[1])))
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="*":
    try:
-    return (types.numb,str(int(execute(split(args[0][1]))[1]) * int(execute(split(args[1][1]))[1])))
+    return (types.flot,str(float(execute(split(args[0][1]))[1]) * int(execute(split(args[1][1]))[1])))
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="/":
    try:
-    return (types.numb,str(int(execute(split(args[0][1]))[1]) / int(execute(split(args[1][1]))[1])))
+    return (types.flot,str(float(execute(split(args[0][1]))[1]) / int(execute(split(args[1][1]))[1])))
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   else:
