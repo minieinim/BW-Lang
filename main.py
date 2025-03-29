@@ -70,14 +70,18 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
   if command[1]=="print":
    for i in args:
     if i[0] == types.func:
-     print(execute(split(var[i[1]][1]))[1],end="")
+     print(execute([var[i[1]]])[1],end="")
     else:
      print(i[1],end="")
   elif command[1]=="let":
    if args[0][0] == types.func:
-    var[args[0][1]]=execute([args[1]])
+    var[args[0][1]]=args[1]
    else:
-    return (types.eror,"Cannot assign")
+    return (types.eror,"Cannot assign function")
+  elif command[1]=="del":
+   if args[0][0] != types.func:
+    return (types.eror,"Cannot delete function")
+   del var[args[0][1]]
   elif command[1]=="+":
    try:
     return (types.numb,str(int(execute(split(args[0][1]))[1]) + int(execute(split(args[1][1]))[1])))
@@ -99,7 +103,7 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   else:
-   return var[command[1]]
+   return execute([var[command[1]]])
  return (types.numb,"0")
 
 def main(file) -> int:
@@ -114,7 +118,8 @@ def main(file) -> int:
  r:tuple[types,str]
  for line in fin.readlines():
   t=split(line)
-#  print(t)
+# print(var)
+# print(t)
   r=execute(t)
   if r[0]==types.eror:
    print(r[1])
