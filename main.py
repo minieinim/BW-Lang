@@ -82,13 +82,21 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
      print(i[1],end="")
   elif command[1]=="let":
    if args[0][0] == types.func:
-    var[args[0][1]]=args[1]
+    try:
+     var[args[0][1]]
+     return (types.eror,"Function already defined")
+    except KeyError:
+     var[args[0][1]]=args[1]
    else:
     return (types.eror,"Cannot assign function")
   elif command[1]=="del":
    if args[0][0] != types.func:
     return (types.eror,"Cannot delete function")
-   del var[args[0][1]]
+   try:
+    return var[args[0][1]]
+    del var[args[0][1]]
+   except KeyError:
+    return (types.eror,"Function not defined")
   elif command[1]=="+":
    try:
     return (types.flot,str(float(execute(split(args[0][1]))[1]) + float(execute(split(args[1][1]))[1])))
