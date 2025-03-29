@@ -30,7 +30,7 @@ vector<pair<int,string>> split(const char* line) {
  for (int i=0;i<strlen(line);i++) {
   if (line[i]=='"') {
    i++;
-   while (line[i]!='"' && i<strlen(line)) {
+   while (i<strlen(line) && line[i]!='"') {
     if (line[i]=='\\') {
      i++;
      switch (line[i]) {
@@ -56,7 +56,7 @@ vector<pair<int,string>> split(const char* line) {
    }
    res.push_back({str,sym});
   } else if (isdigit(line[i])) {
-   while (isdigit(line[i])) {
+   while (i<strlen(line) && isdigit(line[i])) {
     sym+=line[i];
     i++;
    }
@@ -69,13 +69,13 @@ vector<pair<int,string>> split(const char* line) {
    while (1) {
     if (line[i]=='(') paren++;
     else if (line[i]==')') paren--;
-    if (paren==0 || i>strlen(line)) break;
+    if (i>strlen(line) || paren==0) break;
     sym+=line[i];
     i++;
    }
    res.push_back({tbe,sym});
   } else if (!isin(line[i],ws)) {
-   while (!isin(line[i],ws)) {
+   while (i<strlen(line) && !isin(line[i],ws)) {
     sym+=line[i];
     i++;
    }
