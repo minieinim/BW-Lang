@@ -1,3 +1,4 @@
+from sys import argv
 from enum import Enum
 
 ws = " \r\n\t"
@@ -82,18 +83,47 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
     return (types.numb,str(int(execute(split(args[0][1]))[1]) + int(execute(split(args[1][1]))[1])))
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="-":
+   try:
+    return (types.numb,str(int(execute(split(args[0][1]))[1]) - int(execute(split(args[1][1]))[1])))
+   except:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="*":
+   try:
+    return (types.numb,str(int(execute(split(args[0][1]))[1]) * int(execute(split(args[1][1]))[1])))
+   except:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="/":
+   try:
+    return (types.numb,str(int(execute(split(args[0][1]))[1]) / int(execute(split(args[1][1]))[1])))
+   except:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
   else:
    return var[command[1]]
  return (types.numb,"0")
 
-def main() -> int:
- fin: FileIO = open("main.bw","r")
+def main(file) -> int:
+ if not file.endswith(".bw"):
+  print("File should end with extension '.bw'")
+  return 1
+ fin: FileIO = open(file,"r")
+ if not fin:
+  print("File not found: '%s'" % file)
+  return 1
+ t:list[tuple[types,str]]
+ r:tuple[types,str]
  for line in fin.readlines():
   t=split(line)
-  print(t)
-  execute(t)
+#  print(t)
+  r=execute(t)
+  if r[0]==types.eror:
+   print(r[1])
  fin.close()
  return 0
 
 if __name__=="__main__":
- main()
+ if len(argv)<2:
+  print("Not enough arguments")
+  exit(1)
+ r=main(argv[1])
+ exit(r)
