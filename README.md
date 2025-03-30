@@ -13,3 +13,12 @@ print foo "\n" # prints 1
 let bar (print "Hello World\n")
 a # prints "Hello World"
 ```
+## If Statements
+If statements are present in all high-level programming languages.\
+And they are also present in BW:
+```
+if (= 1 1) (print "Hello World\n") (print "Goodbye World\n")
+# always prints "Hello World"
+if (= 1 2) (print "Hello World\n") (print "Goodbye World\n")
+# always prints "Goodbye World"
+```

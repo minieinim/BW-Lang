@@ -4,15 +4,15 @@ from enum import Enum
 ws = " \r\n\t"
 
 class types(Enum):
- ok=-2
  eror=-1
  func=0
  stri=1
  flot=2
- tbev=3
+ boln=3
+ tbev=4
 
-def split(line:str) -> list[tuple[types,str]]:
- res: list[tuple[types,str]] = []
+def split(line:str) -> list[tuple[types,any]]:
+ res: list[tuple[types,any]] = []
  sym:str = ""
  i:int = 0
  paren:int = 0
@@ -44,7 +44,7 @@ def split(line:str) -> list[tuple[types,str]]:
      i+=1
      dot+=1
     elif i<len(line) and line[i]=="." and dot>0: break
-   res.append((types.flot,sym))
+   res.append((types.flot,float(sym)))
   elif line[i]=="#": break
   elif line[i]=="(":
    paren+=1
@@ -60,15 +60,15 @@ def split(line:str) -> list[tuple[types,str]]:
    while i<len(line) and not line[i] in ws:
     sym+=line[i]
     i+=1
-   res.append((types.func,sym))
+   res.append((types.func,sym) if not sym in ["True","False"] else (types.boln,sym))
   sym=""
   i+=1
  return res
 
-var:dict[tuple[str,tuple[types,str]]]={"pi":(types.flot,"3.14159265")}
-def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
+var:dict[tuple[str,tuple[types,any]]]={"pi":(types.flot,"3.14159265")}
+def execute(args:list[tuple[int,any]]) -> tuple[int,any]:
  global var
- command:tuple[int,str] = args.pop(0)
+ command:tuple[int,any] = args.pop(0)
  if command[0] in [types.stri,types.flot]:
   return command
  elif command[0] == types.tbev:
@@ -98,6 +98,14 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
     del var[args[0][1]]
    except KeyError:
     return (types.eror,"Function not defined")
+  elif command[1]=="if":
+   try:
+    if bool(execute([args[0]])[1]):
+     return execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))
+    else:
+     return execute([args[2]] if args[2][0]!=types.tbev else split(args[2][1]))
+   except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="+":
    try:
     return (types.flot,str(float(execute(split(args[0][1]))[1]) + float(execute(split(args[1][1]))[1])))
@@ -118,6 +126,31 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
     return (types.flot,str(float(execute(split(args[0][1]))[1]) / float(execute(split(args[1][1]))[1])))
    except:
     return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="<":
+   try:
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] < execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+   except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="<=":
+   try:
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] <= execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+   except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]==">":
+   try:
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] > execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+   except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]==">=":
+   try:
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] >= execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+   except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="=":
+   try:
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] == execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+   except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
   else:
    if var[command[1]][0]==types.tbev:
     body=list(var[command[1]])
@@ -132,7 +165,7 @@ def execute(args:list[tuple[int,str]]) -> tuple[int,str]:
     return execute([body])
    else:
     return execute([var[command[1]]])
- return (types.ok,"")
+ return (types.flot,0)
 
 def main(file) -> int:
  if not file.endswith(".bw"):
