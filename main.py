@@ -69,6 +69,8 @@ var:dict[tuple[str,tuple[types,any]]]={"pi":(types.flot,"3.14159265")}
 def execute(args:list[tuple[types,any]]) -> tuple[types,any]:
  global var
  command:tuple[types,any] = args.pop(0)
+ print(command)
+ print(args)
  if command[0] in [types.stri,types.flot,types.boln]:
   return command
  elif command[0] == types.tbev:
@@ -102,28 +104,42 @@ def execute(args:list[tuple[types,any]]) -> tuple[types,any]:
    try:
     if execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1]:
      return execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))
-    else:
-     return execute([args[2]] if args[2][0]!=types.tbev else split(args[2][1]))
+    return execute([args[2]] if args[2][0]!=types.tbev else split(args[2][1]))
    except IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="and":
+   try:
+    return (types.boln,bool(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] and execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
+   except ValueError or TypeError or IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="or":
+   try:
+    return (types.boln,bool(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] or execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
+   except ValueError or TypeError or IndexError:
+    return (types.eror,"Cannot execute: '%s'" % command[1])
+  elif command[1]=="not":
+   try:
+    return (types.boln,not bool(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1]))
+   except ValueError or TypeError or IndexError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="+":
    try:
-    return (types.flot,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] + execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+    return (types.flot,float(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] + execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
    except IndexError or TypeError or ValueError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="-":
    try:
-    return (types.flot,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] - execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+    return (types.flot,float(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] - execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
    except IndexError or TypeError or ValueError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="*":
    try:
-    return (types.flot,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] * execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+    return (types.flot,float(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] * execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
    except IndexError or TypeError or ValueError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="/":
    try:
-    return (types.flot,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] / execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
+    return (types.flot,float(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] / execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
    except IndexError or TypeError or ValueError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="<":
@@ -152,19 +168,22 @@ def execute(args:list[tuple[types,any]]) -> tuple[types,any]:
    except IndexError or TypeError or ValueError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   else:
-   if var[command[1]][0]==types.tbev:
-    body=list(var[command[1]])
-    if len(args)>0:
-     for i in range(len(args)):
-      if args[i][0] == types.flot:
-       body[1]=body[1].replace(f"${i+1}",str(args[i][1]))
-      elif args[i][0] == types.stri:
-       body[1]=body[1].replace(f"${i+1}",'"'+args[i][1]+'"')
-      elif args[i][0] == types.tbev:
-       body[1]=body[1].replace(f"${i+1}",'('+args[i][1]+')')
-    return execute([body])
-   else:
-    return execute([var[command[1]]])
+   try:
+    if var[command[1]][0]==types.tbev:
+     body=list(var[command[1]])
+     if len(args)>0:
+      for i in range(len(args)):
+       if args[i][0] == types.flot:
+        body[1]=body[1].replace(f"${i+1}",str(args[i][1]))
+       elif args[i][0] == types.stri:
+        body[1]=body[1].replace(f"${i+1}",'"'+args[i][1]+'"')
+       elif args[i][0] == types.tbev:
+        body[1]=body[1].replace(f"${i+1}",'('+args[i][1]+')')
+     return execute([tuple(body)])
+    else:
+     return execute([var[command[1]]])
+   except:
+    return (types.eror,"Cannot execute: %s" % command[1])
  return (types.flot,0)
 
 def main(file) -> int:
