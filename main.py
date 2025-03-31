@@ -20,7 +20,7 @@ def split(line:str) -> list[tuple[types,any]]:
  while i<len(line):
   if line[i]=='"':
    i+=1
-   while line[i]!='"' and i<len(line):
+   while i<len(line) and line[i]!='"':
     if line[i]=="\\":
      i+=1
      if line[i]=="n":
@@ -52,7 +52,9 @@ def split(line:str) -> list[tuple[types,any]]:
    while True:
     if line[i]=="(": paren+=1
     elif line[i]==")": paren-=1
-    if paren==0 or i>=len(line): break
+    if i>len(line):
+     exit(1)
+    if paren==0: break
     sym+=line[i]
     i+=1
    res.append((types.tbev,sym))
