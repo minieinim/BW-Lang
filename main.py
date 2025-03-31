@@ -69,8 +69,6 @@ var:dict[tuple[str,tuple[types,any]]]={"pi":(types.flot,"3.14159265")}
 def execute(args:list[tuple[types,any]]) -> tuple[types,any]:
  global var
  command:tuple[types,any] = args.pop(0)
- print(command)
- print(args)
  if command[0] in [types.stri,types.flot,types.boln]:
   return command
  elif command[0] == types.tbev:
