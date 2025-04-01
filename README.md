@@ -25,3 +25,19 @@ print (= 1 2) "\n" # False
 print (< 1 2) "\n" # True
 print (> 1 2) "\n" # False
 ```
+## Types
+### String
+```
+"Hello World" # this is a string
+```
+### Number
+```
+1 # this is a number
+3.14 # this is also a number
+```
+### Boolean
+```
+True
+False
+# these are boolean
+```
