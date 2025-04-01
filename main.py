@@ -67,7 +67,7 @@ def split(line:str) -> list[tuple[types,any]]:
   i+=1
  return res
 
-var:dict[tuple[str,tuple[types,any]]]={"pi":(types.flot,"3.14159265")}
+var:dict[tuple[str,tuple[types,any]]]={"pi":(types.flot,3.1415926539)}
 def execute(args:list[tuple[types,any]]) -> tuple[types,any]:
  global var
  command:tuple[types,any] = args.pop(0)
