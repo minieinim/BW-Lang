@@ -109,17 +109,17 @@ def execute(args:list[tuple[types,any]]) -> tuple[types,any]:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="and":
    try:
-    return (types.boln,bool(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] and execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] and execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
    except ValueError or TypeError or IndexError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="or":
    try:
-    return (types.boln,bool(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] or execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1]))
+    return (types.boln,execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1] or execute([args[1]] if args[1][0]!=types.tbev else split(args[1][1]))[1])
    except ValueError or TypeError or IndexError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="not":
    try:
-    return (types.boln,not bool(execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1]))
+    return (types.boln,not execute([args[0]] if args[0][0]!=types.tbev else split(args[0][1]))[1])
    except ValueError or TypeError or IndexError:
     return (types.eror,"Cannot execute: '%s'" % command[1])
   elif command[1]=="+":
